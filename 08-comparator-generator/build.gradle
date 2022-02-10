@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+}
+
+group 'uj.java'
+version '1.0'
+
+sourceCompatibility = JavaVersion.VERSION_17
+
+subprojects {
+    version = '1.0'
+}
+
+
+tasks.register('uberJar', Jar) {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Main-Class': 'uj.java.annotations.Librarian')
+    }
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}
+
+repositories {
+    mavenCentral()
+    flatDir {
+        dirs 'processor/build/libs'
+    }
+}
+
+dependencies {
+    annotationProcessor name: 'processor-1.0'
+    implementation name: 'processor-1.0'
+}

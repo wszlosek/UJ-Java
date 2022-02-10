@@ -1,0 +1,20 @@
+plugins {
+    id 'java'
+}
+
+group ''
+version '1.0-SNAPSHOT'
+
+tasks.register('uberJar', Jar) {
+    manifest {
+        attributes(
+                'Implementation-Title': project.name,
+                'Implementation-Version': project.version,
+                'Main-Class': 'Start')
+    }
+    from sourceSets.main.output
+    dependsOn configurations.runtimeClasspath
+    from {
+        configurations.runtimeClasspath.findAll { it.name.endsWith('jar') }.collect { zipTree(it) }
+    }
+}
